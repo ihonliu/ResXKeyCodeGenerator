@@ -1,0 +1,44 @@
+{
+  "defaultBranch": "main",
+  "branches": [
+    "+([0-9])?(.{+([0-9]),x}).x",
+    "main",
+    "next",
+    "next-major",
+    {
+      "name": "beta",
+      "prerelease": true
+    },
+    {
+      "name": "alpha",
+      "prerelease": true
+    }
+  ],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@droidsolutions-oss/semantic-release-update-file",
+      {
+        "files": [
+          {
+			"path": [ "Catglobe.ResXFileCodeGenerator/Catglobe.ResXFileCodeGenerator.csproj" ],
+            "type": "xml",
+            "replacements": [
+              { "key": "Version", "value": "${nextRelease.version}" },
+              { "key": "RepositoryCommit", "value": "${nextRelease.gitHead}" }
+            ]
+          }
+        ]
+      }
+    ],
+    [
+      "@droidsolutions-oss/semantic-release-nuget",
+		{
+			"projectPath": "Catglobe.ResXFileCodeGenerator/Catglobe.ResXFileCodeGenerator.csproj",
+			"nugetServer": "https://api.nuget.org/v3/index.json"
+		}
+    ],
+    "@semantic-release/github"
+  ]
+}

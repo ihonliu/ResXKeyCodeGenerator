@@ -1,0 +1,86 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    "schedule:weekends",
+    ":semanticCommits"
+  ],
+  "prConcurrentLimit": 0,
+  "prHourlyLimit": 2,
+  "suppressNotifications": [
+    "prIgnoreNotification"
+  ],
+  "postUpdateOptions": [
+    "helmUpdateSubChartArchives"
+  ],
+  "separateMajorMinor": true,
+  "kubernetes": {
+    "fileMatch": "\\.yaml$"
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "(^|/|\\.)[dD]ockerfile$"
+      ],
+      "matchStrings": [
+        "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s+ENV .*?_VERSION[=\\s](?<currentValue>.*)\\s"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "(^|/|\\.)values\\.yaml$"
+      ],
+      "matchStrings": [
+        "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s+tag:\\s*(?<currentValue>.*)\\s"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "(^|/|\\.)[dD]ockerfile$"
+      ],
+      "matchStrings": [
+        "ARG IMAGE=(?<depName>.*?):(?<currentValue>.*?)(@(?<currentDigest>sha256:[a-f0-9]+))?\\s"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "catglobe"
+      ],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": [
+        "windows"
+      ],
+      "matchCurrentVersion": "2019",
+      "enabled": false
+    },
+    {
+      "matchManagers": [
+        "helmv3"
+      ],
+      "matchUpdateTypes": [
+        "pin",
+        "digest",
+        "pinDigest"
+      ],
+      "enabled": false
+    },
+    {
+      "matchFileNames": [
+        "docker-images/**",
+        ".github/workflows/**"
+      ],
+      "automerge": true,
+      "automergeType": "branch"
+    }
+  ]
+}

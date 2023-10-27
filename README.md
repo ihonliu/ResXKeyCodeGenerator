@@ -3,13 +3,13 @@ ResX Designer Source Generator. Generates strongly-typed resource classes for lo
 
 ## Usage
 
-Install the `VocaDb.ResXFileCodeGenerator` package:
+Install the `Catglobe.ResXFileCodeGenerator` package:
 
 ```psl
-dotnet add package VocaDb.ResXFileCodeGenerator
+dotnet add package Catglobe.ResXFileCodeGenerator
 ```
 
-Generated source from [ActivityEntrySortRuleNames.resx](https://github.com/VocaDB/vocadb/blob/6ac18dd2981f82100c8c99566537e4916920219e/VocaDbWeb.Resources/App_GlobalResources/ActivityEntrySortRuleNames.resx):
+Generated source from [ActivityEntrySortRuleNames.resx]
 
 ```cs
 // ------------------------------------------------------------------------------
@@ -29,7 +29,7 @@ namespace Resources
     public static class ActivityEntrySortRuleNames
     {
         private static ResourceManager? s_resourceManager;
-        public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager("VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames", typeof(ActivityEntrySortRuleNames).Assembly);
+        public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager("Catglobe.Web.App_GlobalResources.ActivityEntrySortRuleNames", typeof(ActivityEntrySortRuleNames).Assembly);
         public static CultureInfo? CultureInfo { get; set; }
 
         /// <summary>
@@ -69,9 +69,9 @@ namespace Resources
 
 ### PublicClass (per file or globally)
 
-Use cases: https://github.com/VocaDB/ResXFileCodeGenerator/issues/2.
+Use cases: https://github.com/Catglobe/ResXFileCodeGenerator/issues/2.
 
-Since version 2.0.0, VocaDB.ResXFileCodeGenerator generates internal classes by default. You can change this behavior by setting `PublicClass` to `true`.
+Since version 2.0.0, Catglobe.ResXFileCodeGenerator generates internal classes by default. You can change this behavior by setting `PublicClass` to `true`.
 
 ```xml
 <ItemGroup>
@@ -96,7 +96,7 @@ If you want to apply this globally, use
 
 ### NullForgivingOperators (globally)
 
-Use cases: https://github.com/VocaDB/ResXFileCodeGenerator/issues/1.
+Use cases: https://github.com/Catglobe/ResXFileCodeGenerator/issues/1.
 
 ```xml
 <PropertyGroup>
@@ -104,7 +104,7 @@ Use cases: https://github.com/VocaDB/ResXFileCodeGenerator/issues/1.
 </PropertyGroup>
 ```
 
-By setting `ResXFileCodeGenerator_NullForgivingOperators` to `true`, VocaDB.ResXFileCodeGenerator generates
+By setting `ResXFileCodeGenerator_NullForgivingOperators` to `true`, Catglobe.ResXFileCodeGenerator generates
 ```cs
 public static string CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo)!;
 ```
@@ -265,7 +265,7 @@ namespace Resources
         private class MyResources
         {
             private static ResourceManager? s_resourceManager;
-            public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager("VocaDb.Web.App_GlobalResources.ActivityEntryModel", typeof(ActivityEntryModel).Assembly);
+            public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager("Catglobe.Web.App_GlobalResources.ActivityEntryModel", typeof(ActivityEntryModel).Assembly);
             public CultureInfo? CultureInfo { get; set; }
 
             /// <summary>
@@ -353,7 +353,7 @@ or globally
 </PropertyGroup>
 ```
 
-For brevity, settings to make everything non-static is obmitted.
+For brevity, settings to make everything non-static is omitted.
 
 ### Generate Code (per file or globally)
 
@@ -364,7 +364,7 @@ Benefits of using `System.Resources.ResourceManager`:
 * Supports custom `CultureInfo`
 * Languages are only loaded the first time a language is referenced
 * Only use memory for the languages used
-* Can ship satellite dlls seperately
+* Can ship satellite dlls separately
 
 Disadvantages of using `System.Resources.ResourceManager`
 
@@ -374,7 +374,7 @@ Disadvantages of using `System.Resources.ResourceManager`
 * Build time for .resources -> satellite dll can be quite slow (~150msec per file)
 * Linker optimization doesn't work, since it cannot know which resources are referenced
 
-Benefits of using `VocaDB` code generation:
+Benefits of using `Catglobe` code generation:
 
 * All languages are placed in the main dll, no more satellite dlls
 * Lookup speed is ~600% faster (5ns vs 33ns)
@@ -385,7 +385,7 @@ Benefits of using `VocaDB` code generation:
 * No cold start penalty
 * Smaller combined size of dll (up to 50%, since it doesn't need to store the keys for every single language)
 
-Disadvantages of using `VocaDB` code generation
+Disadvantages of using `Catglobe` code generation
 
 * Since `CultureInfo` are pre-computed, custom `CultureInfo` are not supported (or rather, they always return the default language)
 * Cannot lookup "all" keys (unless using reflection)
@@ -396,7 +396,7 @@ Notice, it is required to set `GenerateResource` to false for all resx files to 
 ```xml
 <ItemGroup>
     <EmbeddedResource Update="**/*.resx">
-        <UseVocaDbResManager>true</UseVocaDbResManager>
+        <UseResManager>true</UseResManager>
         <GenerateResource>false</GenerateResource>
     </EmbeddedResource>
 </ItemGroup>
@@ -406,7 +406,7 @@ or globally
 
 ```xml
 <PropertyGroup>
-  <ResXFileCodeGenerator_UseVocaDbResManager>true</ResXFileCodeGenerator_UseVocaDbResManager>
+  <ResXFileCodeGenerator_UseResManager>true</ResXFileCodeGenerator_UseResManager>
 </PropertyGroup>
 <ItemGroup>
     <EmbeddedResource Update="@(EmbeddedResource)">
@@ -478,3 +478,4 @@ It is also possible to set the namespace using the `CustomToolNamespace` setting
 - [roslyn/source-generators.cookbook.md at master · dotnet/roslyn](https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.cookbook.md)
 - [roslyn/Using Additional Files.md at master · dotnet/roslyn](https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Using%20Additional%20Files.md)
 - [ufcpp - YouTube](https://www.youtube.com/channel/UCY-z_9mau6X-Vr4gk2aWtMQ)
+- [Original project: VocaDB/ResXFileCodeGenerator](https://github.com/VocaDB/ResXFileCodeGenerator)

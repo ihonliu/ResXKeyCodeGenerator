@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Debug": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\Catglobe.ResXFileCodeGenerator.Tests\\Catglobe.ResXFileCodeGenerator.Tests.csproj"
+    }
+  }
+}

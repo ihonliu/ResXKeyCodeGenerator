@@ -1,0 +1,39 @@
+name: Release
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      packages: write # to be able to make package releases
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for npm provenance
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4
+      - name: Setup Node.js
+        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # v3
+        with:
+          cache: npm
+          node-version: 'lts/*'
+      - name: Install dependencies
+        run: npm clean-install
+      - name: Test
+        run: dotnet test
+      - name: Release
+        working-directory: Catglobe.ResXFileCodeGenerator
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
