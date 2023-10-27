@@ -32,7 +32,6 @@ jobs:
       - name: Test
         run: dotnet test
       - name: Release
-        working-directory: Catglobe.ResXFileCodeGenerator
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
