@@ -30,9 +30,7 @@ jobs:
       - name: Install dependencies
         run: npm clean-install
       - name: Test
-        run: dotnet test
-      - name: Cleanup Test
-        run: dotnet clean
+        run: dotnet test -c Release
       - name: Release
         run: npx semantic-release
         env:
