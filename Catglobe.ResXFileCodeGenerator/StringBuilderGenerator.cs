@@ -213,8 +213,8 @@ public sealed partial class StringBuilderGenerator : IGenerator
         builder.Append(indent);
         builder.Append("/// Looks up a localized string similar to ");
         builder.Append(HttpUtility.HtmlEncode(neutralValue.Trim().Replace("\r\n", "\n").Replace("\r", "\n")
-            .Replace("\n", Environment.NewLine + indent + "/// ")));
-        builder.AppendLineLF(".");
+            .Replace("\n", "\n" + indent + "/// "))); // Replace environment.NewLine to work around with RS1035
+		builder.AppendLineLF(".");
 
         builder.Append(indent);
         builder.AppendLineLF("/// </summary>");
