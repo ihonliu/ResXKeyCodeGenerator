@@ -75,6 +75,78 @@ public class GeneratorTests
   </data>
 </root>";
 
+    private const string TextWithUnsupportedChar = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<root>
+  <xsd:schema id=""root"" xmlns="""" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:msdata=""urn:schemas-microsoft-com:xml-msdata"">
+    <xsd:import namespace=""http://www.w3.org/XML/1998/namespace"" />
+    <xsd:element name=""root"" msdata:IsDataSet=""true"">
+      <xsd:complexType>
+        <xsd:choice maxOccurs=""unbounded"">
+          <xsd:element name=""metadata"">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name=""value"" type=""xsd:string"" minOccurs=""0"" />
+              </xsd:sequence>
+              <xsd:attribute name=""name"" use=""required"" type=""xsd:string"" />
+              <xsd:attribute name=""type"" type=""xsd:string"" />
+              <xsd:attribute name=""mimetype"" type=""xsd:string"" />
+              <xsd:attribute ref=""xml:space"" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name=""assembly"">
+            <xsd:complexType>
+              <xsd:attribute name=""alias"" type=""xsd:string"" />
+              <xsd:attribute name=""name"" type=""xsd:string"" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name=""data"">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name=""value"" type=""xsd:string"" minOccurs=""0"" msdata:Ordinal=""1"" />
+                <xsd:element name=""comment"" type=""xsd:string"" minOccurs=""0"" msdata:Ordinal=""2"" />
+              </xsd:sequence>
+              <xsd:attribute name=""name"" type=""xsd:string"" use=""required"" msdata:Ordinal=""1"" />
+              <xsd:attribute name=""type"" type=""xsd:string"" msdata:Ordinal=""3"" />
+              <xsd:attribute name=""mimetype"" type=""xsd:string"" msdata:Ordinal=""4"" />
+              <xsd:attribute ref=""xml:space"" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name=""resheader"">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name=""value"" type=""xsd:string"" minOccurs=""0"" msdata:Ordinal=""1"" />
+              </xsd:sequence>
+              <xsd:attribute name=""name"" type=""xsd:string"" use=""required"" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name=""resmimetype"">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name=""version"">
+    <value>2.0</value>
+  </resheader>
+  <resheader name=""reader"">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name=""writer"">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name=""CreateDate"" xml:space=""preserve"">
+    <value>Oldest</value>
+  </data>
+  <data name=""CreateDateDescending"" xml:space=""preserve"">
+    <value>Newest</value>
+  </data>
+  <data name=""Sys.Name"" xml:space=""preserve"">
+    <value>SystemName</value>
+  </data>
+</root>";
+
+
     private static void Generate(
         IGenerator generator,
         bool publicClass = true,
@@ -243,18 +315,28 @@ using System.Resources;
     /// Looks up a localized string similar to Newest.
     /// </summary>
     public{(staticMembers ? " static" : string.Empty)} string{(nullForgivingOperators ? string.Empty : "?")} CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo){(nullForgivingOperators ? "!" : string.Empty)};
+
+    /// <summary>
+    /// Looks up a localized string similar to SystemName.
+    /// </summary>
+    public{(staticMembers ? " static" : string.Empty)} string{(nullForgivingOperators ? string.Empty : "?")} Sys_Name => ResourceManager.GetString(""Sys.Name"", CultureInfo){(nullForgivingOperators ? "!" : string.Empty)};
     public{(staticClass ? " static" : string.Empty)} class Keys
     {{
 
         /// <summary>
-        /// Name of resource for Oldest.
+        /// Name of resource CreateDate.
         /// </summary>
         public const string CreateDate = nameof(CreateDate);
 
         /// <summary>
-        /// Name of resource for Newest.
+        /// Name of resource CreateDateDescending.
         /// </summary>
         public const string CreateDateDescending = nameof(CreateDateDescending);
+
+        /// <summary>
+        /// Name of resource Sys.Name.
+        /// </summary>
+        public const string Sys_Name = ""Sys.Name"";
     }}
 }}
 ";
@@ -268,7 +350,7 @@ using System.Resources;
                 PublicClass = publicClass,
                 NullForgivingOperators = nullForgivingOperators,
                 GroupedFile = new GroupedAdditionalFile(
-                    mainFile: new AdditionalTextWithHash(new AdditionalTextStub("", Text), NewGuid()),
+                    mainFile: new AdditionalTextWithHash(new AdditionalTextStub("", TextWithUnsupportedChar), NewGuid()),
                     subFiles: Array.Empty<AdditionalTextWithHash>()
                 ),
                 StaticClass = staticClass,
@@ -653,7 +735,7 @@ public static class CommonMessages
     {
 	    var generator = new StringBuilderGenerator();
         GenerateKeys(generator);
-        Generate(generator, true, nullForgivingOperators: true);
+        GenerateKeys(generator, true, nullForgivingOperators: true);
     }
 
     [Fact]

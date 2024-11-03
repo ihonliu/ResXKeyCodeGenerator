@@ -32,8 +32,9 @@ public sealed partial class StringBuilderGenerator : IGenerator
 		{
 			// => "name"
 			// replace " with \"
-            builder.Append(" = ");
+			builder.Append(" = \"");
 			builder.Append(name.Replace(@"""", @"\"""));
+			builder.Append("\"");
 		}
 
 		builder.AppendLineLF(";");
@@ -99,9 +100,8 @@ public sealed partial class StringBuilderGenerator : IGenerator
 		builder.AppendLineLF("/// <summary>");
 
 		builder.Append(indent);
-		builder.Append("/// Name of resource for ");
-		builder.Append(HttpUtility.HtmlEncode(neutralValue.Trim().Replace("\r\n", "\n").Replace("\r", "\n")
-			.Replace("\n", "\n" + indent + "/// "))); // Replace environment.NewLine to work around with RS1035
+		builder.Append("/// Name of resource ");
+		builder.Append(name);
 		builder.AppendLineLF(".");
 
 		builder.Append(indent);
