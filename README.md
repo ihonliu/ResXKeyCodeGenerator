@@ -1,12 +1,14 @@
-# ResXFileCodeGenerator
-ResX Designer Source Generator. Generates strongly-typed resource classes for looking up localized strings.
+# ResXKeyCodeGenerator
+ResX Designer Key Source Generator. Generates a const list for source.
+
+This repo is a simplified version from the original [VocaDB/ResXFileCodeGenerator](https://github.com/VocaDB/ResXFileCodeGenerator) and [Catglobe/ResXFileCodeGenerator](https://github.com/Catglobe/ResXFileCodeGenerator) for just generating the key of items in resx files.
 
 ## Usage
 
-Install the `Catglobe.ResXFileCodeGenerator` package:
+Install the `Ihon.ResXKeyCodeGenerator` package:
 
 ```psl
-dotnet add package Catglobe.ResXFileCodeGenerator
+dotnet add package Ihon.ResXKeyCodeGenerator
 ```
 
 Generated source from [ActivityEntrySortRuleNames.resx]
@@ -28,50 +30,25 @@ namespace Resources
 
     public static class ActivityEntrySortRuleNames
     {
-        private static ResourceManager? s_resourceManager;
-        public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager("Catglobe.Web.App_GlobalResources.ActivityEntrySortRuleNames", typeof(ActivityEntrySortRuleNames).Assembly);
-        public static CultureInfo? CultureInfo { get; set; }
 
         /// <summary>
-        /// Looks up a localized string similar to Oldest.
+        /// Name of resource CreateDate.
         /// </summary>
-        public static string? CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo);
+        public const string CreateDate = nameof(CreateDate);
 
         /// <summary>
-        /// Looks up a localized string similar to Newest.
+        /// Name of resource CreateDateDescending.
         /// </summary>
-        public static string? CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo);
-    }
+        public const string CreateDateDescending = nameof(CreateDateDescending);
+	}
 }
 ```
-
-## New in version 3
-
-* The generator now utilizes the IIncrementalGenerator API to instantly update the generated code, thus giving you instant intellisense.
-
-* Added error handling for multiple members of same name, and members that have same name as class. These are clickable in visual studio to lead you to the source of the error, unlike before where they resulted in broken builds and you had to figure out why.
-
-* Namespace naming fixed for resx files in the top level folder.
-
-* Resx files can now be named with multiple extensions, e.g. myresources.cshtml.resx and will result in class being called myresources.
-
-* Added the ability to generate inner classes, partial outer classes and non-static members. Very useful if you want to ensure that only a particular class can use those resources instead of being spread around the codebase.
-
-* Use same 'Link' setting as msbuild uses to determine embedded file name.
-
-* Can set a class postfix name
-
-## New in version 3.1
-
-* The generator can now generate code to lookup translations instead of using the 20 year old System.Resources.ResourceManager
 
 ## Options
 
 ### PublicClass (per file or globally)
 
-Use cases: https://github.com/Catglobe/ResXFileCodeGenerator/issues/2.
-
-Since version 2.0.0, Catglobe.ResXFileCodeGenerator generates internal classes by default. You can change this behavior by setting `PublicClass` to `true`.
+Ihon.ResXKeyCodeGenerator generates internal classes by default. You can change this behavior by setting `PublicClass` to `true`.
 
 ```xml
 <ItemGroup>
@@ -90,27 +67,8 @@ or
 If you want to apply this globally, use
 ```xml
 <PropertyGroup>
-  <ResXFileCodeGenerator_PublicClass>true</ResXFileCodeGenerator_PublicClass>
+  <ResXKeyCodeGenerator_PublicClass>true</ResXKeyCodeGenerator_PublicClass>
 </PropertyGroup>
-```
-
-### NullForgivingOperators (globally)
-
-Use cases: https://github.com/Catglobe/ResXFileCodeGenerator/issues/1.
-
-```xml
-<PropertyGroup>
-  <ResXFileCodeGenerator_NullForgivingOperators>true</ResXFileCodeGenerator_NullForgivingOperators>
-</PropertyGroup>
-```
-
-By setting `ResXFileCodeGenerator_NullForgivingOperators` to `true`, Catglobe.ResXFileCodeGenerator generates
-```cs
-public static string CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo)!;
-```
-instead of
-```cs
-public static string? CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo);
 ```
 
 ### Non-static classes (per file or globally)
@@ -129,7 +87,7 @@ or globally
 
 ```xml
 <PropertyGroup>
-  <ResXFileCodeGenerator_StaticClass>false</ResXFileCodeGenerator_StaticClass>
+  <ResXKeyCodeGenerator_StaticClass>false</ResXKeyCodeGenerator_StaticClass>
 </PropertyGroup>
 ```
 
@@ -151,27 +109,7 @@ or globally
 
 ```xml
 <PropertyGroup>
-  <ResXFileCodeGenerator_PartialClass>true</ResXFileCodeGenerator_PartialClass>
-</PropertyGroup>
-```
-
-### Static Members (per file or globally)
-
-In some rare cases it might be useful for the members to be non-static.
-
-```xml
-<ItemGroup>
-  <EmbeddedResource Update="Resources\ArtistCategoriesNames.resx">
-    <StaticMembers>false</StaticMembers>
-  </EmbeddedResource>
-</ItemGroup>
-```
-
-or globally
-
-```xml
-<PropertyGroup>
-  <ResXFileCodeGenerator_StaticMembers>false</ResXFileCodeGenerator_StaticMembers>
+  <ResXKeyCodeGenerator_PartialClass>true</ResXKeyCodeGenerator_PartialClass>
 </PropertyGroup>
 ```
 
@@ -190,10 +128,9 @@ This example configuration allows you to use Resources.MyResource in your model,
     <StaticClass>false</StaticClass>
     <PartialClass>true</PartialClass>
     <PublicClass>true</PublicClass>
-    <InnerClassVisibility>public</InnerClassVisibility>
+    <InnerKeyClassVisibility>public</InnerKeyClassVisibility>
     <PartialClass>false</PartialClass>
-    <InnerClassInstanceName>Resources</InnerClassInstanceName>
-    <InnerClassName>_Resources</InnerClassName>
+    <InnerKeyClassName>_Resources</InnerKeyClassName>
   </EmbeddedResource>
 </ItemGroup>
 ```
@@ -203,11 +140,11 @@ or just the postfix globally
 
 ```xml
 <PropertyGroup>
-  <ResXFileCodeGenerator_ClassNamePostfix>Model</ResXFileCodeGenerator_ClassNamePostfix>
+  <ResXKeyCodeGenerator_ClassNamePostfix>Model</ResXKeyCodeGenerator_ClassNamePostfix>
 </PropertyGroup>
 ```
 
-## Inner classes (per file or globally)
+## Inner key class (per file or globally)
 
 If your resx files are organized along with code files, it can be quite useful to ensure that the resources are not accessible outside the specific class the resx file belong to.
 
@@ -215,9 +152,8 @@ If your resx files are organized along with code files, it can be quite useful t
 <ItemGroup>
     <EmbeddedResource Update="**/*.resx">
         <DependentUpon>$([System.String]::Copy('%(FileName).cs'))</DependentUpon>
-        <InnerClassName>MyResources</InnerClassName>
-        <InnerClassVisibility>private</InnerClassVisibility>
-        <InnerClassInstanceName>EveryoneLikeMyNaming</InnerClassInstanceName>
+        <InnerKeyClassName>MyResources</InnerKeyClassName>
+        <InnerKeyClassVisibility>private</InnerKeyClassVisibility>
         <StaticMembers>false</StaticMembers>
         <StaticClass>false</StaticClass>
         <PartialClass>true</PartialClass>
@@ -232,12 +168,11 @@ or globally
 
 ```xml
 <PropertyGroup>
-  <ResXFileCodeGenerator_InnerClassName>MyResources</ResXFileCodeGenerator_InnerClassName>
-  <ResXFileCodeGenerator_InnerClassVisibility>private</ResXFileCodeGenerator_InnerClassVisibility>
-  <ResXFileCodeGenerator_InnerClassInstanceName>EveryoneLikeMyNaming</InnerClassInstanceName>
-  <ResXFileCodeGenerator_StaticMembers>false</ResXFileCodeGenerator_StaticMembers>
-  <ResXFileCodeGenerator_StaticClass>false</ResXFileCodeGenerator_StaticClass>
-  <ResXFileCodeGenerator_PartialClass>true</ResXFileCodeGenerator_PartialClass>
+  <ResXKeyCodeGenerator_InnerKeyClassName>MyResources</ResXKeyCodeGenerator_InnerKeyClassName>
+  <ResXKeyCodeGenerator_InnerKeyClassVisibility>private</ResXKeyCodeGenerator_InnerKeyClassVisibility>
+  <ResXKeyCodeGenerator_StaticMembers>false</ResXKeyCodeGenerator_StaticMembers>
+  <ResXKeyCodeGenerator_StaticClass>false</ResXKeyCodeGenerator_StaticClass>
+  <ResXKeyCodeGenerator_PartialClass>true</ResXKeyCodeGenerator_PartialClass>
 </PropertyGroup>
 ```
 
@@ -260,14 +195,8 @@ namespace Resources
 
     public partial class ActivityEntryModel
     {
-        public MyResources EveryoneLikeMyNaming { get; } = new();
-
-        private class MyResources
+        public class MyResources
         {
-            private static ResourceManager? s_resourceManager;
-            public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager("Catglobe.Web.App_GlobalResources.ActivityEntryModel", typeof(ActivityEntryModel).Assembly);
-            public CultureInfo? CultureInfo { get; set; }
-
             /// <summary>
             /// Looks up a localized string similar to Oldest.
             /// </summary>
@@ -282,13 +211,12 @@ namespace Resources
 }
 ```
 
-### Inner Class Visibility (per file or globally)
+### Inner Key Class Visibility (per file or globally)
 
-By default inner classes are not generated, unless this setting is one of the following:
+By default inner key class are not generated, unless this setting is one of the following:
 
  * Public
  * Internal
- * Private
  * Protected
  * SameAsOuter
 
@@ -299,7 +227,7 @@ It is also possible to use "NotGenerated" to override on a file if the global se
 ```xml
 <ItemGroup>
     <EmbeddedResource Update="**/*.resx">
-        <InnerClassVisibility>private</InnerClassVisibility>
+        <InnerKeyClassVisibility>protected</InnerKeyClassVisibility>
     </EmbeddedResource>
 </ItemGroup>
 ```
@@ -308,18 +236,18 @@ or globally
 
 ```xml
 <PropertyGroup>
-  <ResXFileCodeGenerator_InnerClassVisibility>private</ResXFileCodeGenerator_InnerClassVisibility>
+  <ResXKeyCodeGenerator_InnerKeyClassVisibility>protected</ResXKeyCodeGenerator_InnerKeyClassVisibility>
 </PropertyGroup>
 ```
 
-### Inner Class name (per file or globally)
+### Inner Key Class name (per file or globally)
 
 By default the inner class is named "Resources", which can be overriden with this setting:
 
 ```xml
 <ItemGroup>
     <EmbeddedResource Update="**/*.resx">
-        <InnerClassName>MyResources</InnerClassName>
+        <InnerKeyClassName>MyResources</InnerKeyClassName>
     </EmbeddedResource>
 </ItemGroup>
 ```
@@ -328,103 +256,9 @@ or globally
 
 ```xml
 <PropertyGroup>
-  <ResXFileCodeGenerator_InnerClassName>MyResources</ResXFileCodeGenerator_InnerClassName>
+  <ResXKeyCodeGenerator_InnerKeyClassName>MyResources</ResXKeyCodeGenerator_InnerKeyClassName>
 </PropertyGroup>
 ```
-
-
-### Inner Class instance name (per file or globally)
-
-By default no instance is available of the class, but that can be made available if this setting is given.
-
-```xml
-<ItemGroup>
-    <EmbeddedResource Update="**/*.resx">
-        <InnerClassInstanceName>EveryoneLikeMyNaming</InnerClassInstanceName>
-    </EmbeddedResource>
-</ItemGroup>
-```
-
-or globally
-
-```xml
-<PropertyGroup>
-  <ResXFileCodeGenerator_InnerClassInstanceName>EveryoneLikeMyNaming</ResXFileCodeGenerator_InnerClassInstanceName>
-</PropertyGroup>
-```
-
-For brevity, settings to make everything non-static is omitted.
-
-### Generate Code (per file or globally)
-
-By default the ancient `System.Resources.ResourceManager` is used.
-
-Benefits of using `System.Resources.ResourceManager`:
-
-* Supports custom `CultureInfo`
-* Languages are only loaded the first time a language is referenced
-* Only use memory for the languages used
-* Can ship satellite dlls separately
-
-Disadvantages of using `System.Resources.ResourceManager`
-
-* The satellite dlls are always lazy loaded, so cold start penalty is high
-* Satellite dlls requires that you can scan the dir for which files are available, which can cause issues in some project types
-* Loading a satellite dll takes way more memory than just loading the respective strings
-* Build time for .resources -> satellite dll can be quite slow (~150msec per file)
-* Linker optimization doesn't work, since it cannot know which resources are referenced
-
-Benefits of using `Catglobe` code generation:
-
-* All languages are placed in the main dll, no more satellite dlls
-* Lookup speed is ~600% faster (5ns vs 33ns)
-* Zero allocations
-* Very small code footprint (about 10 bytes per language, instead of including the entire `System.Resources`)
-* Very fast build time
-* Because all code is referencing the strings directly, the linker can see which strings are actually used and which are not.
-* No cold start penalty
-* Smaller combined size of dll (up to 50%, since it doesn't need to store the keys for every single language)
-
-Disadvantages of using `Catglobe` code generation
-
-* Since `CultureInfo` are pre-computed, custom `CultureInfo` are not supported (or rather, they always return the default language)
-* Cannot lookup "all" keys (unless using reflection)
-* Main dll size increased since it contains all language strings (sometimes, the compiler can pack code strings much better than resource strings and it doesn't need to store the keys)
-
-Notice, it is required to set `GenerateResource` to false for all resx files to prevent the built-in resgen.exe from running.
-
-```xml
-<ItemGroup>
-    <EmbeddedResource Update="**/*.resx">
-        <UseResManager>true</UseResManager>
-        <GenerateResource>false</GenerateResource>
-    </EmbeddedResource>
-</ItemGroup>
-```
-
-or globally
-
-```xml
-<PropertyGroup>
-  <ResXFileCodeGenerator_UseResManager>true</ResXFileCodeGenerator_UseResManager>
-</PropertyGroup>
-<ItemGroup>
-    <EmbeddedResource Update="@(EmbeddedResource)">
-        <GenerateResource>false</GenerateResource>
-    </EmbeddedResource>
-</ItemGroup>
-```
-
-If you get build error MSB3030, add this to your csproj to prevent it from trying to copy satellite dlls that no longer exists
-
-```xml
-<Target Name="PreventMSB3030" DependsOnTargets="ComputeIntermediateSatelliteAssemblies" BeforeTargets="GenerateSatelliteAssemblies" >
-  <ItemGroup>
-    <IntermediateSatelliteAssembliesWithTargetPath Remove="@(IntermediateSatelliteAssembliesWithTargetPath)"></IntermediateSatelliteAssembliesWithTargetPath>
-  </ItemGroup>   
-</Target>
-```
-
 
 ## Resource file namespaces
 
@@ -470,162 +304,13 @@ It is also possible to set the namespace using the `CustomToolNamespace` setting
 </ItemGroup>
 ```
 
-## Key generation
-
-This function will extract all keys from the resx file and generate a class with all the keys as constants.
-
-```xml
-<ItemGroup>
-  <EmbeddedResource Update="Resources\ArtistCategoriesNames.resx">
-    <KeyGeneration>true</KeyGeneration>
-  </EmbeddedResource>
-</ItemGroup>
-```
-or
-```xml
-<ItemGroup>
-  <EmbeddedResource Update="Resources\ArtistCategoriesNames.resx" KeyGeneration="true" />
-</ItemGroup>
-```
-
-Source resx file
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<root>
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <data name="CreateDate" xml:space="preserve">
-    <value>Oldest</value>
-  </data>
-  <data name="CreateDateDescending" xml:space="preserve">
-    <value>Newest</value>
-  </data>
-  <data name="Sys.Name" xml:space="preserve">
-    <value>SystemName</value>
-  </data>
-</root>
-```
-
-
-Generation result
-```C#
-// ------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-// ------------------------------------------------------------------------------
-#nullable enable
-namespace Resources;
-using System.Globalization;
-using System.Resources;
-
-public class ActivityEntrySortRuleNames
-{
-    private static ResourceManager? s_resourceManager;
-    public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager("Catglobe.Web.App_GlobalResources.ActivityEntrySortRuleNames", typeof(ActivityEntrySortRuleNames).Assembly);
-    public static CultureInfo? CultureInfo { get; set; }
-
-    /// <summary>
-    /// Looks up a localized string similar to Oldest.
-    /// </summary>
-    public static string CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo)!;
-
-    /// <summary>
-    /// Looks up a localized string similar to Newest.
-    /// </summary>
-    public static string CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo)!;
-
-    /// <summary>
-    /// Looks up a localized string similar to SystemName.
-    /// </summary>
-    public static string Sys_Name => ResourceManager.GetString("Sys.Name", CultureInfo)!;
-    public class Keys
-    {
-
-        /// <summary>
-        /// Name of resource CreateDate.
-        /// </summary>
-        public const string CreateDate = nameof(CreateDate);
-
-        /// <summary>
-        /// Name of resource CreateDateDescending.
-        /// </summary>
-        public const string CreateDateDescending = nameof(CreateDateDescending);
-
-        /// <summary>
-        /// Name of resource Sys.Name.
-        /// </summary>
-        public const string Sys_Name = "Sys.Name";
-    }
-}
-```
-
-
 ## References
 - [Introducing C# Source Generators | .NET Blog](https://devblogs.microsoft.com/dotnet/introducing-c-source-generators/)
 - [microsoft/CsWin32: A source generator to add a user-defined set of Win32 P/Invoke methods and supporting types to a C# project.](https://github.com/microsoft/cswin32)
-- [kenkendk/mdresxfilecodegenerator: Resx Designer Generator](https://github.com/kenkendk/mdresxfilecodegenerator)
+- [kenkendk/mdResXKeyCodeGenerator: Resx Designer Generator](https://github.com/kenkendk/mdResXKeyCodeGenerator)
 - [dotnet/ResXResourceManager: Manage localization of all ResX-Based resources in one central place.](https://github.com/dotnet/ResXResourceManager)
 - [roslyn/source-generators.cookbook.md at master · dotnet/roslyn](https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.cookbook.md)
 - [roslyn/Using Additional Files.md at master · dotnet/roslyn](https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Using%20Additional%20Files.md)
 - [ufcpp - YouTube](https://www.youtube.com/channel/UCY-z_9mau6X-Vr4gk2aWtMQ)
-- [Original project: VocaDB/ResXFileCodeGenerator](https://github.com/VocaDB/ResXFileCodeGenerator)
+- [Original project: VocaDB/ResXKeyCodeGenerator](https://github.com/VocaDB/ResXKeyCodeGenerator)
+- [Original project: Catglobe/ResXKeyCodeGenerator](https://github.com/Catglobe/ResXFileCodeGenerator)

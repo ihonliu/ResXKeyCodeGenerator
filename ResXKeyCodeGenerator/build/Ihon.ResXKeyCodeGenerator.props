@@ -1,0 +1,31 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <AdditionalFileItemNames>$(AdditionalFileItemNames);EmbeddedResource</AdditionalFileItemNames>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CompilerVisibleProperty Include="MSBuildProjectFullPath" />
+    <CompilerVisibleProperty Include="MSBuildProjectName" />
+    <CompilerVisibleProperty Include="RootNamespace" />
+    <CompilerVisibleProperty Include="CustomToolNamespace" />
+    <CompilerVisibleProperty Include="ResXKeyCodeGenerator_PublicClass" />
+    <CompilerVisibleProperty Include="ResXKeyCodeGenerator_StaticClass" />
+    <CompilerVisibleProperty Include="ResXKeyCodeGenerator_StaticMembers" />
+    <CompilerVisibleProperty Include="ResXKeyCodeGenerator_PartialClass" />
+    <CompilerVisibleProperty Include="ResXKeyCodeGenerator_ClassNamePostfix" />
+    <CompilerVisibleProperty Include="ResXKeyCodeGenerator_InnerKeyClassName" />
+    <CompilerVisibleProperty Include="ResXKeyCodeGenerator_InnerKeyClassVisibility" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="Link" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="TargetPath" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="CustomToolNamespace" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="ClassNamePostfix" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="PublicClass" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="StaticClass" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="StaticMembers" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="PartialClass" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="InnerKeyClassName" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="InnerKeyClassVisibility" />
+  </ItemGroup>
+
+</Project>

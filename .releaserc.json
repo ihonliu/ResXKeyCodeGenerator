@@ -22,7 +22,7 @@
       {
         "files": [
           {
-			"path": [ "Catglobe.ResXFileCodeGenerator/Catglobe.ResXFileCodeGenerator.csproj" ],
+			"path": [ "Ihon.ResXKeyCodeGenerator/Ihon.ResXKeyCodeGenerator.csproj" ],
             "type": "xml",
             "replacements": [
               { "key": "Version", "value": "${nextRelease.version}" },
@@ -35,7 +35,7 @@
     [
       "@droidsolutions-oss/semantic-release-nuget",
 		{
-			"projectPath": "Catglobe.ResXFileCodeGenerator/Catglobe.ResXFileCodeGenerator.csproj",
+			"projectPath": "Ihon.ResXKeyCodeGenerator/Ihon.ResXKeyCodeGenerator.csproj",
 			"nugetServer": "https://api.nuget.org/v3/index.json"
 		}
     ],

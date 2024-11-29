@@ -1,0 +1,148 @@
+﻿using System.Xml.Linq;
+
+namespace Ihon.ResXKeyCodeGenerator;
+
+public sealed partial class StringBuilderGenerator : IGenerator
+{
+    private static readonly Regex ValidMemberNamePattern = new(
+        @"^[\p{L}\p{Nl}_][\p{Cf}\p{L}\p{Mc}\p{Mn}\p{Nd}\p{Nl}\p{Pc}]*$",
+        RegexOptions.Compiled | RegexOptions.CultureInvariant
+    );
+
+    private static readonly Regex InvalidMemberNameSymbols = new(
+        @"[^\p{Cf}\p{L}\p{Mc}\p{Mn}\p{Nd}\p{Nl}\p{Pc}]",
+        RegexOptions.Compiled | RegexOptions.CultureInvariant
+    );
+
+    private static readonly DiagnosticDescriptor DuplicateWarning = new(
+        "ResXKeyCodeGenerator001",
+        "Duplicate member",
+        "Ignored added member '{0}'",
+        "ResXKeyCodeGenerator",
+        DiagnosticSeverity.Warning,
+        true
+    );
+
+    private static readonly DiagnosticDescriptor MemberSameAsClassWarning = new(
+        "ResXKeyCodeGenerator002",
+        "Member same name as class",
+        "Ignored member '{0}' has same name as class",
+        "ResXKeyCodeGenerator",
+        DiagnosticSeverity.Warning,
+        true
+    );
+
+    private static readonly DiagnosticDescriptor InnerKeyClassNameIsNullOrEmpty = new(
+        "ResXKeyCodeGenerator003",
+        "Inner key class name is null or empty",
+        "Inner key class name cannot be null or empty when inner key class visibility is not NotGenerated",
+        "ResXKeyCodeGenerator",
+        DiagnosticSeverity.Error,
+        true
+    );
+
+    public (
+        string GeneratedFileName,
+        string SourceCode,
+        IEnumerable<Diagnostic> ErrorsAndWarnings
+        ) Generate(
+            FileOptions options,
+            CancellationToken cancellationToken = default
+        )
+    {
+        var errorsAndWarnings = new List<Diagnostic>();
+        var generatedFileName = $"{options.LocalNamespace}.{options.ClassName}.g.cs";
+
+        var content = options.GroupedFile.MainFile.File.GetText(cancellationToken);
+        if (content is null)
+            return (generatedFileName, "//ERROR reading file:" + options.GroupedFile.MainFile.File.Path,
+                errorsAndWarnings);
+
+        // HACK: netstandard2.0 doesn't support improved interpolated strings?
+        var builder = GetBuilder(options.CustomToolNamespace ?? options.LocalNamespace);
+
+        builder.Append(options.PublicClass ? "public" : "internal");
+        builder.Append(options.StaticClass ? " static" : string.Empty);
+        builder.Append(options.PartialClass ? " partial class " : " class ");
+        builder.AppendLineLf(options.ClassName);
+        builder.AppendLineLf("{");
+
+        var indent = "    ";
+        var containerClassName = options.ClassName;
+
+        #region Generate an inner class named keys to contain all keys
+
+        var generateInnerKeyClass = options.InnerKeyClassVisibility != InnerKeyClassVisibility.NotGenerated;
+
+        if (generateInnerKeyClass)
+        {
+            if (options.InnerKeyClassName.IsNullOrEmpty())
+            {
+                errorsAndWarnings.Add(Diagnostic.Create(InnerKeyClassNameIsNullOrEmpty, null));
+            }
+            else
+            {
+                containerClassName = options.InnerKeyClassName;
+            }
+
+            builder.Append(indent);
+
+            builder.Append(options.InnerKeyClassVisibility.GetVisibilityKeyword(options.PublicClass)!);
+            // builder.Append("public");
+
+            builder.Append(options.StaticClass ? " static" : string.Empty);
+            builder.Append(options.PartialClass ? " partial class " : " class ");
+
+            builder.AppendLineLf(containerClassName);
+            builder.Append(indent);
+            builder.AppendLineLf("{");
+
+            indent += "    ";
+        }
+
+        KeyGeneration(options, content, indent, containerClassName, builder, errorsAndWarnings,
+            cancellationToken);
+        if (generateInnerKeyClass) builder.AppendLineLf("    }");
+        builder.AppendLineLf("}");
+
+        #endregion
+
+        return (
+            GeneratedFileName: generatedFileName,
+            SourceCode: builder.ToString(),
+            ErrorsAndWarnings: errorsAndWarnings
+        );
+    }
+
+    private static IEnumerable<(string key, string value, IXmlLineInfo line)>? ReadResxFile(SourceText content)
+    {
+        using var reader = new StringReader(content.ToString());
+
+        if (XDocument.Load(reader, LoadOptions.SetLineInfo).Root is { } element)
+            return element
+                .Descendants()
+                .Where(static data => data.Name == "data")
+                .Select(static data => (
+                    key: data.Attribute("name")!.Value,
+                    value: data.Descendants("value").First().Value,
+                    line: (IXmlLineInfo)data.Attribute("name")!
+                ));
+
+        return null;
+    }
+
+    private static StringBuilder GetBuilder(string withNameSpace)
+    {
+        var builder = new StringBuilder();
+
+        builder.AppendLineLf(Constants.AutoGeneratedHeader);
+        builder.AppendLineLf("#nullable enable");
+
+        builder.Append("namespace ");
+        builder.Append(withNameSpace);
+        builder.AppendLineLf(";");
+        builder.AppendLineLf();
+
+        return builder;
+    }
+}
